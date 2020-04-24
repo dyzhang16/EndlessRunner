@@ -4,12 +4,10 @@ class Menu extends Phaser.Scene{
     }
 
     preload(){
-       //loading any assets necessary
+        this.load.image('menu','./assets/menuScreen.png');
     }
     create(){
-        let centerX = game.config.width/2;                                                  //just a simple Menu Screen for the time
-        let centerY = game.config.height/2                                                  //being, can expand as we go along
-        this.add.text(centerX, centerY, 'Left Click to Start').setOrigin(0.5);
+        this.menu = this.add.tileSprite(0,0,640,480,'menu').setOrigin(0,0);
     }
     update(){
         
