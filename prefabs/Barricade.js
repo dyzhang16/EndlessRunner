@@ -22,7 +22,7 @@ class Barricade extends Phaser.Physics.Arcade.Sprite {
 
             this.scene.addBarricade(this.parent, this.velocity);
         }
-        //destroy once past bottom of screen
+        //currently destroying once at top of screen needs to be bottom
         if(this.y < this.height) {
             this.destroy();
         }
