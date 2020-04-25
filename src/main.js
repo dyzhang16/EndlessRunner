@@ -15,7 +15,7 @@ let game = new Phaser.Game(config);
 
 let centerX = game.config.width/2;
 let centerY = game.config.height/2;
-const barricadeWidth = 64;
-const barricadeHeight = 32;
-const arrowWidth = 12;
-const arrowHeight = 18;
+const barricadeWidth = 128;
+const barricadeHeight = 64;
+const arrowWidth = 24;
+const arrowHeight = 36;

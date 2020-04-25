@@ -22,8 +22,8 @@ class Play extends Phaser.Scene{
         this.p1.play('p1Move');
 
         //barricade speed
-        this.barricadeSpeed = 300;
-        this.barricadeSpeedMax = 700;
+        this.barricadeSpeed = 200;
+        this.barricadeSpeedMax = 600;
 
         //barricade group
        this.barricadeGroup = this.add.group({
@@ -32,8 +32,8 @@ class Play extends Phaser.Scene{
         this.addBarricade();
 
         //arrow speed
-        this.arrowSpeed = 300;
-        this.arrowSpeedMax = 700;
+        this.arrowSpeed = 400;
+        this.arrowSpeedMax = 1200;
 
         //arrow group
        this.arrowGroup = this.add.group({
@@ -61,21 +61,21 @@ class Play extends Phaser.Scene{
         let dy = this.input.activePointer.worldY - this.p1.y;
         var angle = Math.atan2(dy,dx);
         this.p1.body.setVelocity(
-            Math.cos(angle) * 250,
-            Math.sin(angle) * 250
+            Math.cos(angle) * 200,
+            Math.sin(angle) * 200
         )   
-        }
             //check collision
-        this.physics.world.collide(this.p1, this.barrierGroup, this.p1Collision, null, this);    
+        this.physics.world.collide(this.p1, this.arrowGroup, this.p1Collision, null, this);  
+        this.physics.world.collide(this.p1, this.barricadeGroup, this.p1Collision, null, this);    
+        }
     }
-
     //p1collision 
     p1Collision(){
         this.p1.destroyed = true;  //collision off
         this.p1.destroy();
+        this.scene.start('scoreScene');
     //particles
         console.log("dead");
     }
-
 }
 
