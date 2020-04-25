@@ -7,7 +7,7 @@ class Play extends Phaser.Scene{
         this.load.image('arrow','./assets/arrow.png');
         this.load.image('barricade','./assets/barricade.png');
         this.load.image('battlefield','./assets/backgroundTile.png');
-        this.load.spritesheet('player','./assets/characterMovingSheet.png',{frameWidth: 30, frameHeight: 19, startFrame: 0, endFrame: 1});
+        this.load.spritesheet('player','./assets/characterMovingSheet.png',{frameWidth: 60, frameHeight: 38, startFrame: 0, endFrame: 1});
     }
     create(){
         this.battle = this.add.tileSprite(0,0,640,480,'battlefield').setOrigin(0,0);
