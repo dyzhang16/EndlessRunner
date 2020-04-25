@@ -22,19 +22,33 @@ class Play extends Phaser.Scene{
         this.p1.play('p1Move');
 
         //barricade speed
-        this.barricadeSpeed = -300;
-        this.barricadeSpeedMax = -700;
+        this.barricadeSpeed = 300;
+        this.barricadeSpeedMax = 700;
 
         //barricade group
        this.barricadeGroup = this.add.group({
           runChildUpdate: true                //update group
          });
         this.addBarricade();
+
+        //arrow speed
+        this.arrowSpeed = 300;
+        this.arrowSpeedMax = 700;
+
+        //arrow group
+       this.arrowGroup = this.add.group({
+          runChildUpdate: true                //update group
+         });
+        this.addArrow();
     }
 
     addBarricade() {
         let barricade = new Barricade(this, this.barricadeSpeed);   //new barricade
         this.barricadeGroup.add(barricade);                         //add to existing group
+    }
+    addArrow() {
+        let arrow = new Arrow(this, this.arrowSpeed);   //new barricade
+        this.arrowGroup.add(arrow);                         //add to existing group
     }
 
     update(){
