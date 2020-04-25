@@ -11,6 +11,7 @@ class Play extends Phaser.Scene{
     }
     create(){
         this.battle = this.add.tileSprite(0,0,640,480,'battlefield').setOrigin(0,0);
+     
         this.p1 = new Player(this, game.config.width/2, game.config.height*3/4,'player').setOrigin(0,0); //add new Player sprite
         this.anims.create({
             key: 'p1Move',
@@ -19,20 +20,48 @@ class Play extends Phaser.Scene{
             frameRate: 12
         });
         this.p1.play('p1Move');
-        
+
+        //barricade speed
+        this.barricadeSpeed = -300;
+        this.barricadeSpeedMax = -700;
+
+        //barricade group
+       this.barricadeGroup = this.add.group({
+          runChildUpdate: true                //update group
+         });
+        this.addBarricade();
     }
+
+    addBarricade() {
+        let barricade = new Barricade(this, this.barricadeSpeed);   //new barricade
+        this.barricadeGroup.add(barricade);                         //add to existing group
+    }
+
     update(){
         this.battle.tilePositionY -= 6;
+
+        //stop input if destroyed
+        if(!this.p1.destroyed){
 
         let dx = this.input.activePointer.worldX - this.p1.x;           //https://phaser.discourse.group/t/agar-io-mouse-control/1573/3
         let dy = this.input.activePointer.worldY - this.p1.y;
         var angle = Math.atan2(dy,dx);
         this.p1.body.setVelocity(
-            Math.cos(angle) * 125,
-            Math.sin(angle) * 125
-        )    
+            Math.cos(angle) * 250,
+            Math.sin(angle) * 250
+        )   
+        }
+            //check collision
+        this.physics.world.collide(this.p1, this.barrierGroup, this.p1Collision, null, this);    
     }
+
+    //p1collision 
+    p1Collision(){
+        this.p1.destroyed = true;  //collision off
+        this.p1.destroy();
+    //particles
+        console.log("dead");
+    }
+
 }
 
-
-        
