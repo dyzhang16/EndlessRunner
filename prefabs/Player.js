@@ -7,6 +7,7 @@ class Player extends Phaser.Physics.Arcade.Sprite{
         this.setBounce(0.5);
         this.setImmovable();
         this.destroyed = false;
+        this.shield = false;
         this.setCollideWorldBounds(true);
         scene.add.existing(this);                               
         scene.physics.add.existing(this);                       //add object to existing scene

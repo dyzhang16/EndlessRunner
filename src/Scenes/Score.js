@@ -7,11 +7,11 @@ class Score extends Phaser.Scene{
     }
     create(){
         //add highScoreMethod here
-        this.add.text(centerX,game.config.height*2/3,'Left Click to Main Menu',{fontFamily: 'Roboto',fontsize: '26px',color: '#FACADE' }) //temporary screen
+        this.add.text(centerX,game.config.height*2/3,'Right Click to Main Menu',{fontFamily: 'Roboto',fontsize: '26px',color: '#FACADE' }) //temporary screen
     }
     update(){
-        if(this.input.activePointer.isDown && this.game.input.activePointer.button == 0){           //leftClick transition
-            this.scene.start('playScene');
+        if(this.input.activePointer.isDown && this.game.input.activePointer.button == 2){           //leftClick transition
+            this.scene.start('menuScene');
         }
     }
 }

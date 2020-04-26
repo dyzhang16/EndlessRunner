@@ -7,7 +7,7 @@ class Play extends Phaser.Scene{
         this.load.image('arrow','./assets/arrow.png');
         this.load.image('barricade','./assets/barricade.png');
         this.load.image('battlefield','./assets/backgroundTile.png');
-        this.load.spritesheet('shield', './assets/characterShieldSheet.png',{frameWidth: 60, frameHeight: 38, startFrame: 0, endFrame: 1});
+        this.load.spritesheet('shield', './assets/characterShieldSheet.png',{frameWidth: 88, frameHeight: 48, startFrame: 0, endFrame: 1});
         this.load.spritesheet('player','./assets/characterMovingSheet.png',{frameWidth: 60, frameHeight: 38, startFrame: 0, endFrame: 1});
     }
     create(){
@@ -18,6 +18,12 @@ class Play extends Phaser.Scene{
             key: 'p1Move',
             repeat: -1,
             frames: this.anims.generateFrameNumbers('player', {start: 0, end: 1, first: 0}),
+            frameRate: 12
+        });
+        this.anims.create({
+            key: 'p1Shield',
+            repeat: -1,
+            frames: this.anims.generateFrameNumbers('shield', {start: 0, end: 1, first: 0}),
             frameRate: 12
         });
         this.p1.play('p1Move');
@@ -55,7 +61,6 @@ class Play extends Phaser.Scene{
     update(){
         this.battle.tilePositionY -= 12;
 
-        //stop input if destroyed
         if(!this.p1.destroyed){
         //player movement    
         let dx = this.input.activePointer.worldX - this.p1.x;           //https://phaser.discourse.group/t/agar-io-mouse-control/1573/3
@@ -64,21 +69,34 @@ class Play extends Phaser.Scene{
         this.p1.body.setVelocity(
             Math.cos(angle) * 250,
             Math.sin(angle) * 250
-        )   
-        //shield input
-        if (game.input.activePointer.isDown) {
-            this.battle.tilePositionY += 9;
-            console.log("slowing down");
-        }
-
-
-            //check collision
-        this.physics.world.collide(this.p1, this.arrowGroup, this.p1Collision, null, this);  
-        this.physics.world.collide(this.p1, this.barricadeGroup, this.p1Collision, null, this);    
+        )
+        }   
+            //shield input
+            if(this.game.input.activePointer.isDown && this.game.input.activePointer.button == 0) {
+                this.p1.shield = true;
+                //this.battle.tilePositionY += 9;
+                this.p1.play('p1Shield');
+            }else{
+                this.p1.shield = false;
+                this.p1.play('p1Move');
+            }
+        //check collision
+        this.physics.world.collide(this.p1, this.arrowGroup, this.p1ArrowCollision, null, this);  
+        this.physics.world.collide(this.p1, this.barricadeGroup, this.p1BarrierCollision, null, this);    
+        
+    }
+    //Arrow collision
+    p1ArrowCollision(){
+        if(this.p1.shield == true){
+            this.arrowGroup.setVisible(false);
+        }else{
+            this.p1.destroyed = true;  //collision off
+            this.p1.destroy();
+            this.scene.start('scoreScene');
         }
     }
-    //p1collision 
-    p1Collision(){
+    //Barrier collision 
+    p1BarrierCollision(){
         this.p1.destroyed = true;  //collision off
         this.p1.destroy();
         this.scene.start('scoreScene');
