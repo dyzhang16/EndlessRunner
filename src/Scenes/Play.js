@@ -7,6 +7,7 @@ class Play extends Phaser.Scene{
         this.load.image('arrow','./assets/arrow.png');
         this.load.image('barricade','./assets/barricade.png');
         this.load.image('battlefield','./assets/backgroundTile.png');
+        this.load.spritesheet('shield', './assets/characterShieldSheet.png',{frameWidth: 60, frameHeight: 38, startFrame: 0, endFrame: 1});
         this.load.spritesheet('player','./assets/characterMovingSheet.png',{frameWidth: 60, frameHeight: 38, startFrame: 0, endFrame: 1});
     }
     create(){
@@ -20,7 +21,7 @@ class Play extends Phaser.Scene{
             frameRate: 12
         });
         this.p1.play('p1Move');
-
+        
         //barricade speed
         this.barricadeSpeed = 200;
         this.barricadeSpeedMax = 600;
@@ -52,18 +53,25 @@ class Play extends Phaser.Scene{
     }
 
     update(){
-        this.battle.tilePositionY -= 6;
+        this.battle.tilePositionY -= 12;
 
         //stop input if destroyed
         if(!this.p1.destroyed){
-
+        //player movement    
         let dx = this.input.activePointer.worldX - this.p1.x;           //https://phaser.discourse.group/t/agar-io-mouse-control/1573/3
         let dy = this.input.activePointer.worldY - this.p1.y;
         var angle = Math.atan2(dy,dx);
         this.p1.body.setVelocity(
-            Math.cos(angle) * 200,
-            Math.sin(angle) * 200
+            Math.cos(angle) * 250,
+            Math.sin(angle) * 250
         )   
+        //shield input
+        if (game.input.activePointer.isDown) {
+            this.battle.tilePositionY += 9;
+            console.log("slowing down");
+        }
+
+
             //check collision
         this.physics.world.collide(this.p1, this.arrowGroup, this.p1Collision, null, this);  
         this.physics.world.collide(this.p1, this.barricadeGroup, this.p1Collision, null, this);    
