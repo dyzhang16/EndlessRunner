@@ -1,28 +1,27 @@
 class Arrow extends Phaser.Physics.Arcade.Sprite {
     constructor(scene, velocity) {
         //phaser sprite constructor
-        //           direction where its going          spawnpoint                        how often it spawns
+        //              spawn region in x and y coordinates                    
         super(scene, game.config.height - Math.floor(Math.random()*(arrowWidth*30)),  Phaser.Math.Between(0, 0 + arrowHeight), 'arrow');
         
         scene.add.existing(this);           //existing scene 
         scene.physics.add.existing(this);   //physics to body
-        this.setVelocityY(velocity);        //move
-        this.setImmovable();
-        this.newArrow = true;           //barrier spawn control
-
-        this.scene = scene;
+        this.setVelocityY(velocity);        //move downwards
+        this.setImmovable();                //cannot be pushed by other object physics
+        this.newArrow = true;           //arrow spawn control
+        this.scene = scene;             //set variables for future reference
         this.velocity = velocity;
     }
 
     update() {
         super.update();
-      
+        //new arrows spawn if an existing arrow reach 2/3 of game window height
         if(this.newArrow && this.y > game.config.height*2/3) {
             this.newArrow = false;
 
-            this.scene.addBarricade(this.parent, this.velocity);
+            this.scene.addArrow(this.parent, this.velocity);
         }
-        //currently destroying once at top of screen needs to be bottom
+        //destroys arrow if it hits bottom
         if(this.y > game.config.height) {
             this.destroy();
         }

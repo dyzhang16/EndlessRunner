@@ -6,7 +6,6 @@ class Score extends Phaser.Scene{
     preload(){
     }
     create(){
-        //add highScoreMethod here
         this.add.text(centerX,game.config.height*2/3,'Right Click to Main Menu',{fontFamily: 'Roboto',fontsize: '26px',color: '#FACADE' }) //temporary screen
     }
     update(){

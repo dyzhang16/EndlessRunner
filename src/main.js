@@ -19,3 +19,4 @@ const barricadeWidth = 128;
 const barricadeHeight = 64;
 const arrowWidth = 24;
 const arrowHeight = 36;
+let level = 0;
