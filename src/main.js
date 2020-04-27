@@ -20,3 +20,4 @@ const barricadeHeight = 64;
 const arrowWidth = 24;
 const arrowHeight = 36;
 let level = 0;
+const textSpacer = 36; 

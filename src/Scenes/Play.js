@@ -8,7 +8,7 @@ class Play extends Phaser.Scene{
         this.load.image('arrow','./assets/arrow.png');
         this.load.image('barricade','./assets/barricade.png');
         this.load.image('battlefield','./assets/backgroundTile.png');
-        this.load.spritesheet('shield', './assets/characterShieldSheet.png',{frameWidth: 88, frameHeight: 48, startFrame: 0, endFrame: 1});
+        this.load.spritesheet('shield', './assets/characterShieldSheet.png',{frameWidth: 60, frameHeight: 48, startFrame: 0, endFrame: 1});
         this.load.spritesheet('player','./assets/characterMovingSheet.png',{frameWidth: 60, frameHeight: 38, startFrame: 0, endFrame: 1});
     }
     create(){
@@ -48,7 +48,7 @@ class Play extends Phaser.Scene{
         this.addArrow();    
 
         this.difficultyTimer = this.time.addEvent({                         //timer event every 10 seconds
-            delay: 10000,                                                   //calls on levelBump() function
+            delay: 1000,                                                   //calls on levelBump() function
             callback: this.levelBump,
             callbackScope: this,
             loop: true
@@ -93,8 +93,8 @@ class Play extends Phaser.Scene{
     //Arrow collision
     p1ArrowCollision(){
         if(this.p1.shield == true){
-            this.arrowGroup.setVisible(false);      //sets arrow to Invisible if shield is out
-        }else{
+            this.arrowGroup.setVisible(false);      //sets arrow to Invisible if shield is out          //bug when shield is out
+        }else{                                                                                          //both arrows disappear
             this.p1.destroyed = true;           //collision off
             this.p1.destroy();                  //destroy player
             this.scene.start('scoreScene');     //transition to scoreScene
@@ -112,7 +112,7 @@ class Play extends Phaser.Scene{
         // increment level (aka score)
         level++;
         // bump speed every 5 levels
-        if(level % 5 == 0) {
+        if(level % 10 == 0) {
             console.log(`level: ${level}, speed: ${this.barricadeSpeed}`);
             if(this.barricadeSpeed <= this.barricadeSpeedMax && this.arrowSpeed <= this.arrowSpeedMax) {     // increase barricade speed and arrow speed
                 this.barricadeSpeed += 15;
