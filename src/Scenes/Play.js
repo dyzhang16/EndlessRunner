@@ -41,15 +41,15 @@ class Play extends Phaser.Scene{
         this.arrowSpeedMax = 800;
         
         //arrow group
-       this.arrowGroup = this.add.group({
-          runChildUpdate: true                //update group
-         });
-        this.addArrow();                                                    //2 arrows per cycle
-        this.addArrow();    
+        this.arrowGroup = this.add.group({
+            runChildUpdate: true                //update group
+           });
+          this.addArrow();                                                    //2 arrows per cycle
+          this.addArrow();
 
-        this.difficultyTimer = this.time.addEvent({                         //timer event every 10 seconds
-            delay: 1000,                                                   //calls on levelBump() function
-            callback: this.levelBump,
+        this.difficultyTimer = this.time.addEvent({                         //timer event every second
+            delay: 1000,                                                   //calls on TimePlayed() function
+            callback: this.TimePlayed,
             callbackScope: this,
             loop: true
         });
@@ -78,13 +78,13 @@ class Play extends Phaser.Scene{
         )
         }   
         //shield input
-        if(this.game.input.activePointer.isDown && this.game.input.activePointer.button == 0) {         //bug animation for playing running
-            this.p1.shield = true;                                                                      //not playing properly
-            this.battle.tilePositionY += 9;                                                             //left click will play animation for shield
-            this.p1.play('p1Shield');                                                                   //also slows down movement
+        if(this.game.input.activePointer.isDown && this.game.input.activePointer.button == 0) {         
+            this.p1.shield = true;                                                                      //if left click is down player
+            this.battle.tilePositionY += 9;                                                             //will pull out shield
+            this.p1.play('p1Shield');                                                                   //and slow down
         }else{
-            this.p1.shield = false;                                                                     //shield down
-            this.p1.play('p1Move');   
+            this.p1.shield = false;                                                                     //else running animation
+            this.p1.play('p1Move',true);   
         }
         //check collision
         this.physics.world.collide(this.p1, this.arrowGroup, this.p1ArrowCollision, null, this);            //collision arrow and player
@@ -93,6 +93,7 @@ class Play extends Phaser.Scene{
     //Arrow collision
     p1ArrowCollision(){
         if(this.p1.shield == true){
+            console.log('destroyed');
             this.arrowGroup.setVisible(false);      //sets arrow to Invisible if shield is out          //bug when shield is out
         }else{                                                                                          //both arrows disappear
             this.p1.destroyed = true;           //collision off
@@ -108,12 +109,12 @@ class Play extends Phaser.Scene{
         this.scene.start('scoreScene'); //transition to scoreScene
         //console.log("dead");
     }
-    levelBump() {
-        // increment level (aka score)
-        level++;
-        // bump speed every 5 levels
-        if(level % 10 == 0) {
-            console.log(`level: ${level}, speed: ${this.barricadeSpeed}`);
+    TimePlayed() {
+        //  
+        seconds++;
+        // speed increase every 10 seconds
+        if(seconds % 10 == 0) {
+            console.log(`Time: ${seconds}, speed: ${this.barricadeSpeed}`);
             if(this.barricadeSpeed <= this.barricadeSpeedMax && this.arrowSpeed <= this.arrowSpeedMax) {     // increase barricade speed and arrow speed
                 this.barricadeSpeed += 15;
                 this.arrowSpeed += 15;
