@@ -16,9 +16,8 @@ class Arrow extends Phaser.Physics.Arcade.Sprite {
     update() {
         super.update();
         //new arrows spawn if an existing arrow reach 2/3 of game window height
-        if(this.newArrow && this.y > game.config.height*2/3) {
+        if(this.newArrow && this.y > game.config.height*3/4) {
             this.newArrow = false;
-
             this.scene.addArrow(this.parent, this.velocity);
         }
         //destroys arrow if it hits bottom

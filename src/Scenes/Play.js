@@ -44,8 +44,8 @@ class Play extends Phaser.Scene{
         this.arrowGroup = this.add.group({
             runChildUpdate: true                //update group
            });
-          this.addArrow();                                                    //2 arrows per cycle
-          this.addArrow();
+        this.addArrow();                                                    //2 arrows per cycle
+        this.addArrow();
 
         this.difficultyTimer = this.time.addEvent({                         //timer event every second
             delay: 1000,                                                   //calls on TimePlayed() function
@@ -91,13 +91,13 @@ class Play extends Phaser.Scene{
         this.physics.world.collide(this.p1, this.barricadeGroup, this.p1BarrierCollision, null, this);      //collision barricade and player
     }
     //Arrow collision
-    p1ArrowCollision(){
-        if(this.p1.shield == true){
-            console.log('destroyed');
-            this.arrowGroup.setVisible(false);      //sets arrow to Invisible if shield is out          //bug when shield is out
-        }else{                                                                                          //both arrows disappear
-            this.p1.destroyed = true;           //collision off
-            this.p1.destroy();                  //destroy player
+    p1ArrowCollision(p1,arrow){                                         //pass parameters referencing player and specific arrow
+        if(p1.shield == true){
+            //console.log('destroyed');
+            arrow.setVisible(false);      //sets arrow to Invisible if shield is out          
+        }else{                                                                                          
+            p1.destroyed = true;           //collision off
+            p1.destroy();                  //destroy player
             this.scene.start('scoreScene');     //transition to scoreScene
             //console.log('dead');
         }
