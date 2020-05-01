@@ -10,6 +10,7 @@ class Play extends Phaser.Scene{
         this.load.image('battlefield','./assets/Refined_Road_clone.png');
         this.load.image('powerup','/assets/caltropDrop.png');
         this.load.image('powerupUI','/assets/powerupUI.png');
+        this.load.image('legion','/assets/romanLegion.png');
         this.load.spritesheet('shield', './assets/characterShieldSheet.png',{frameWidth: 60, frameHeight: 48, startFrame: 0, endFrame: 1});
         this.load.spritesheet('player','./assets/characterMovingSheet.png',{frameWidth: 60, frameHeight: 38, startFrame: 0, endFrame: 1});
     }
@@ -28,6 +29,10 @@ class Play extends Phaser.Scene{
             frames: this.anims.generateFrameNumbers('shield', {start: 0, end: 1, first: 0}),
             frameRate: 12
         });
+
+        //army speed
+        this.armySpeed = 0;                                           
+        this.addArmy();
 
         //barricade speed
         this.barricadeSpeed = 200;                                          //barricade speed starts at 200, can increase 600
@@ -77,6 +82,9 @@ class Play extends Phaser.Scene{
         let powerup = new Powerup(this, this.powerupSpeed);
         this.powerupGroup.add(powerup);
     }
+    addArmy() {
+        this.legion = new Army(this, centerX-10, 680, this.armySpeed); 
+    }
 
     update(){
         this.battle.tilePositionY -= 12;                                //background speed
@@ -96,6 +104,7 @@ class Play extends Phaser.Scene{
             this.p1.shield = true;                                                                      //if left click is down player
             this.battle.tilePositionY += 9;                                                             //will pull out shield
             this.p1.play('p1Shield');                                                                   //and slow down
+            this.legion.y -= 1;                                                                         //army comes up
         }else{
             this.p1.shield = false;                                                                     //else running animation
             this.p1.play('p1Move',true);   
@@ -104,6 +113,7 @@ class Play extends Phaser.Scene{
         this.physics.world.collide(this.p1, this.arrowGroup, this.p1ArrowCollision, null, this);            //collision arrow and player
         this.physics.world.collide(this.p1, this.barricadeGroup, this.p1BarrierCollision, null, this);      //collision barricade and player
         this.physics.world.collide(this.p1, this.powerupGroup, this.p1PowerupCollision, null, this);      //collision barricade and player
+        this.physics.world.collide(this.p1, this.legion, this.p1ArmyCollision, null, this);              //army collision + player
     }
     //Arrow collision
     p1ArrowCollision(p1,arrow){                                         //pass parameters referencing player and specific arrow
@@ -128,6 +138,13 @@ class Play extends Phaser.Scene{
         //Updates POWERUP UI
         console.log('powerup obtained');
         powerup.PowerupObtained = true;
+    }
+    //army collision 
+    p1ArmyCollision(){
+        this.p1.destroyed = true;   //collision off
+        this.p1.destroy();          //destroy player
+        this.scene.start('scoreScene'); //transition to scoreScene
+        //console.log("dead");
     }
     TimePlayed() {
         //  
