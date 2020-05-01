@@ -24,3 +24,5 @@ const powerupWidth = 44;
 const powerupHeight = 48;
 let seconds = 0;
 const textSpacer = 36; 
+let powerupObtained = false;
+let caltropSpeed = 300;  

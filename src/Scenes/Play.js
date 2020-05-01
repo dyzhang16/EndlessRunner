@@ -5,19 +5,28 @@ class Play extends Phaser.Scene{
 
     preload(){
         //load all image and spritesheet assets
+        this.load.image('battlefield','./assets/Refined_Road_clone.png');
+        this.load.image('powerupUIempty','/assets/powerupUI.png');
+        this.load.image('powerupUI','./assets/playUICaltrop.png');
         this.load.image('arrow','./assets/arrow.png');
         this.load.image('barricade','./assets/barricade.png');
-        this.load.image('battlefield','./assets/Refined_Road_clone.png');
-        this.load.image('powerup','/assets/caltropDrop.png');
-        this.load.image('powerupUI','/assets/powerupUI.png');
+        this.load.image('caltrops','./assets/caltrops.png');
+        this.load.image('powerup','./assets/caltropDrop.png');
         this.load.image('legion','/assets/romanLegion.png');
         this.load.spritesheet('shield', './assets/characterShieldSheet.png',{frameWidth: 60, frameHeight: 48, startFrame: 0, endFrame: 1});
         this.load.spritesheet('player','./assets/characterMovingSheet.png',{frameWidth: 60, frameHeight: 38, startFrame: 0, endFrame: 1});
     }
+
     create(){
+        keySPACE = this.input.keyboard.addKey(Phaser.Input.Keyboard.KeyCodes.SPACE);
         this.battle = this.add.tileSprite(0,0,640,480,'battlefield').setOrigin(0,0);
-        this.UI = this.add.tileSprite(0,0,640,480,'powerupUI').setOrigin(0,0);
-        this.p1 = new Player(this, game.config.width/2, game.config.height*3/4,'player').setOrigin(0,0); //add new Player sprite
+        this.UI = this.add.tileSprite(0,0,640,480,'powerupUIempty').setOrigin(0,0);
+        this.menumusic = this.sound.add('menu_music',{volume: 0.1});                        //add music
+        this.menumusic.play();                                                              //play music
+        this.arrowHitShield = this.sound.add('arrownoise',{volume: 0.1}); 
+        this.deathNoise = this.sound.add('death',{volume: 0.1});
+
+        this.p1 = new Player(this, game.config.width/2, game.config.height*3/4,'player').setOrigin(0.5); //add new Player sprite
         this.anims.create({
             key: 'p1Move',
             repeat: -1,
@@ -39,7 +48,7 @@ class Play extends Phaser.Scene{
         this.barricadeSpeedMax = 600;
 
         //barricade group
-       this.barricadeGroup = this.add.group({
+        this.barricadeGroup = this.add.group({
           runChildUpdate: true                //update group
          });
         this.addBarricade();                                                //1 barricade per cycle
@@ -59,6 +68,10 @@ class Play extends Phaser.Scene{
         this.powerupSpeedMax = 600;
         //powerup group
         this.powerupGroup = this.add.group({
+            runChildUpdate: true                //update group
+           });
+        //caltrop group
+           this.caltropGroup = this.add.group({
             runChildUpdate: true                //update group
            });
 
@@ -82,6 +95,10 @@ class Play extends Phaser.Scene{
         let powerup = new Powerup(this, this.powerupSpeed);
         this.powerupGroup.add(powerup);
     }
+    addCaltrop(){
+        let trap = new Caltrop(this,this.p1.x, this.p1.y, caltropSpeed,'caltrops').setScale(1.25).setOrigin(0.5);
+        this.caltropGroup.add(trap);
+    }
     addArmy() {
         this.legion = new Army(this, centerX-10, 680, this.armySpeed); 
     }
@@ -104,10 +121,19 @@ class Play extends Phaser.Scene{
             this.p1.shield = true;                                                                      //if left click is down player
             this.battle.tilePositionY += 9;                                                             //will pull out shield
             this.p1.play('p1Shield');                                                                   //and slow down
-            this.legion.y -= 1;                                                                         //army comes up
+            //this.legion.y -= 1;                                                                         //army comes up
         }else{
             this.p1.shield = false;                                                                     //else running animation
             this.p1.play('p1Move',true);   
+        }
+        //drops caltrops
+        if(powerupObtained == true) {         
+            if(Phaser.Input.Keyboard.JustDown(keySPACE)) {   
+                console.log('drop caltrops');   
+                this.addCaltrop();
+                this.UI = this.add.tileSprite(0,0,640,480,'powerupUIempty').setOrigin(0,0);
+                powerupObtained = false; 
+            }
         }
         //check collision
         this.physics.world.collide(this.p1, this.arrowGroup, this.p1ArrowCollision, null, this);            //collision arrow and player
@@ -118,26 +144,31 @@ class Play extends Phaser.Scene{
     //Arrow collision
     p1ArrowCollision(p1,arrow){                                         //pass parameters referencing player and specific arrow
         if(p1.shield == true){
-            //console.log('destroyed');
-            arrow.setVisible(false);      //sets arrow to Invisible if shield is out          
-        }else{                                                                                          
+            this.arrowHitShield.play(); 
+            arrow.setVisible(false);      //sets arrow to Invisible if shield is out
+            //console.log('arrow blocked');          
+        }else{          
+            this.deathNoise.play();                                                                                
             p1.destroyed = true;           //collision off
             p1.destroy();                  //destroy player
+            this.menumusic.stop();
             this.scene.start('scoreScene');     //transition to scoreScene
             //console.log('dead');
         }
     }
     //Barrier collision 
     p1BarrierCollision(){
+        this.deathNoise.play();
         this.p1.destroyed = true;   //collision off
         this.p1.destroy();          //destroy player
+        this.menumusic.stop();
         this.scene.start('scoreScene'); //transition to scoreScene
         //console.log("dead");
     }
-    p1PowerupCollision(p1,powerup){
-        //Updates POWERUP UI
+    p1PowerupCollision(){
+        this.UI = this.add.tileSprite(0,0,640,480,'powerupUI').setOrigin(0,0);
+        powerupObtained = true;
         console.log('powerup obtained');
-        powerup.PowerupObtained = true;
     }
     //army collision 
     p1ArmyCollision(){
@@ -157,7 +188,7 @@ class Play extends Phaser.Scene{
                 this.arrowSpeed += 15;
             }
         }
-        if(seconds% 20 == 0){
+        if(seconds% 2 == 0){
             this.addPowerup(this,this.powerupSpeed);
         }
     }

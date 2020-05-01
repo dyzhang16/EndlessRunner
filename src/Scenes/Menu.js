@@ -4,6 +4,9 @@ class Menu extends Phaser.Scene{
     }
 
     preload(){
+        this.load.audio('menu_music','./assets/bensound-epic.mp3');                                 //background music by Bensound.com
+        this.load.audio('arrownoise','./assets/arrowHitShield.wav');                                //http://soundbible.com/947-Metal-Bang.html
+        this.load.audio('death','./assets/deathSound.wav');                                          //https://freesound.org/people/AlineAudio/sounds/416838/
         this.load.image('menu','./assets/menuScreen.png');
     }
     create(){
