@@ -6,13 +6,13 @@ class Play extends Phaser.Scene{
     preload(){
         //load all image and spritesheet assets
         this.load.image('battlefield','./assets/Refined_Road_clone.png');
-        this.load.image('powerupUIempty','/assets/powerupUI.png');
+        this.load.image('powerupUIempty','./assets/powerupUI.png');
         this.load.image('powerupUI','./assets/playUICaltrop.png');
         this.load.image('arrow','./assets/arrow.png');
         this.load.image('barricade','./assets/barricade.png');
         this.load.image('caltrops','./assets/caltrops.png');
         this.load.image('powerup','./assets/caltropDrop.png');
-        this.load.image('legion','/assets/romanLegion.png');
+        this.load.image('legion','./assets/romanLegion.png');
         this.load.spritesheet('shield', './assets/characterShieldSheet.png',{frameWidth: 60, frameHeight: 48, startFrame: 0, endFrame: 1});
         this.load.spritesheet('player','./assets/characterMovingSheet.png',{frameWidth: 60, frameHeight: 38, startFrame: 0, endFrame: 1});
     }
@@ -96,7 +96,7 @@ class Play extends Phaser.Scene{
         this.powerupGroup.add(powerup);
     }
     addCaltrop(){
-        let trap = new Caltrop(this,this.p1.x, this.p1.y, caltropSpeed,'caltrops').setScale(1.25).setOrigin(0.5);
+        let trap = new Caltrop(this, this.p1.x, this.p1.y,'caltrops', 0, caltropSpeed).setScale(1.25).setOrigin(0.5);
         this.caltropGroup.add(trap);
     }
     addArmy() {
@@ -121,7 +121,7 @@ class Play extends Phaser.Scene{
             this.p1.shield = true;                                                                      //if left click is down player
             this.battle.tilePositionY += 9;                                                             //will pull out shield
             this.p1.play('p1Shield');                                                                   //and slow down
-            //this.legion.y -= 1;                                                                         //army comes up
+            this.legion.y -= 1;                                                                         //army comes up
         }else{
             this.p1.shield = false;                                                                     //else running animation
             this.p1.play('p1Move',true);   
@@ -129,7 +129,7 @@ class Play extends Phaser.Scene{
         //drops caltrops
         if(powerupObtained == true) {         
             if(Phaser.Input.Keyboard.JustDown(keySPACE)) {   
-                console.log('drop caltrops');   
+                //console.log('drop caltrops');   
                 this.addCaltrop();
                 this.UI = this.add.tileSprite(0,0,640,480,'powerupUIempty').setOrigin(0,0);
                 powerupObtained = false; 
@@ -140,6 +140,7 @@ class Play extends Phaser.Scene{
         this.physics.world.collide(this.p1, this.barricadeGroup, this.p1BarrierCollision, null, this);      //collision barricade and player
         this.physics.world.collide(this.p1, this.powerupGroup, this.p1PowerupCollision, null, this);      //collision barricade and player
         this.physics.world.collide(this.p1, this.legion, this.p1ArmyCollision, null, this);              //army collision + player
+        this.physics.world.collide(this.caltropGroup, this.legion, this.caltropArmyCollision, null, this);
     }
     //Arrow collision
     p1ArrowCollision(p1,arrow){                                         //pass parameters referencing player and specific arrow
@@ -168,7 +169,7 @@ class Play extends Phaser.Scene{
     p1PowerupCollision(){
         this.UI = this.add.tileSprite(0,0,640,480,'powerupUI').setOrigin(0,0);
         powerupObtained = true;
-        console.log('powerup obtained');
+        //console.log('powerup obtained');
     }
     //army collision 
     p1ArmyCollision(){
@@ -176,6 +177,9 @@ class Play extends Phaser.Scene{
         this.p1.destroy();          //destroy player
         this.scene.start('scoreScene'); //transition to scoreScene
         //console.log("dead");
+    }
+    caltropArmyCollision(){
+        this.legion.y = this.legion.y + 10;
     }
     TimePlayed() {
         //  
