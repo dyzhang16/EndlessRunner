@@ -7,12 +7,15 @@ class Play extends Phaser.Scene{
         //load all image and spritesheet assets
         this.load.image('arrow','./assets/arrow.png');
         this.load.image('barricade','./assets/barricade.png');
-        this.load.image('battlefield','./assets/backgroundTile.png');
+        this.load.image('battlefield','./assets/Refined_Road_clone.png');
+        this.load.image('powerup','/assets/caltropDrop.png');
+        this.load.image('powerupUI','/assets/powerupUI.png');
         this.load.spritesheet('shield', './assets/characterShieldSheet.png',{frameWidth: 60, frameHeight: 48, startFrame: 0, endFrame: 1});
         this.load.spritesheet('player','./assets/characterMovingSheet.png',{frameWidth: 60, frameHeight: 38, startFrame: 0, endFrame: 1});
     }
     create(){
         this.battle = this.add.tileSprite(0,0,640,480,'battlefield').setOrigin(0,0);
+        this.UI = this.add.tileSprite(0,0,640,480,'powerupUI').setOrigin(0,0);
         this.p1 = new Player(this, game.config.width/2, game.config.height*3/4,'player').setOrigin(0,0); //add new Player sprite
         this.anims.create({
             key: 'p1Move',
@@ -44,8 +47,15 @@ class Play extends Phaser.Scene{
         this.arrowGroup = this.add.group({
             runChildUpdate: true                //update group
            });
-        this.addArrow();                                                    //2 arrows per cycle
+        this.addArrow();                                                    
         this.addArrow();
+        //powerup speed
+        this.powerupSpeed = 300;
+        this.powerupSpeedMax = 600;
+        //powerup group
+        this.powerupGroup = this.add.group({
+            runChildUpdate: true                //update group
+           });
 
         this.difficultyTimer = this.time.addEvent({                         //timer event every second
             delay: 1000,                                                   //calls on TimePlayed() function
@@ -62,6 +72,10 @@ class Play extends Phaser.Scene{
     addArrow() {
         let arrow = new Arrow(this, this.arrowSpeed);       //new Arrow
         this.arrowGroup.add(arrow);                         //add to existing group
+    }
+    addPowerup(){
+        let powerup = new Powerup(this, this.powerupSpeed);
+        this.powerupGroup.add(powerup);
     }
 
     update(){
@@ -89,6 +103,7 @@ class Play extends Phaser.Scene{
         //check collision
         this.physics.world.collide(this.p1, this.arrowGroup, this.p1ArrowCollision, null, this);            //collision arrow and player
         this.physics.world.collide(this.p1, this.barricadeGroup, this.p1BarrierCollision, null, this);      //collision barricade and player
+        this.physics.world.collide(this.p1, this.powerupGroup, this.p1PowerupCollision, null, this);      //collision barricade and player
     }
     //Arrow collision
     p1ArrowCollision(p1,arrow){                                         //pass parameters referencing player and specific arrow
@@ -109,6 +124,11 @@ class Play extends Phaser.Scene{
         this.scene.start('scoreScene'); //transition to scoreScene
         //console.log("dead");
     }
+    p1PowerupCollision(p1,powerup){
+        //Updates POWERUP UI
+        console.log('powerup obtained');
+        powerup.PowerupObtained = true;
+    }
     TimePlayed() {
         //  
         seconds++;
@@ -119,6 +139,9 @@ class Play extends Phaser.Scene{
                 this.barricadeSpeed += 15;
                 this.arrowSpeed += 15;
             }
+        }
+        if(seconds% 20 == 0){
+            this.addPowerup(this,this.powerupSpeed);
         }
     }
 }

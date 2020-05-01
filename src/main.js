@@ -20,5 +20,7 @@ const barricadeWidth = 128;
 const barricadeHeight = 64;
 const arrowWidth = 24;
 const arrowHeight = 36;
+const powerupWidth = 44;
+const powerupHeight = 48;
 let seconds = 0;
 const textSpacer = 36; 
