@@ -5,16 +5,17 @@ class Play extends Phaser.Scene{
 
     preload(){
         //load all image and spritesheet assets
-        this.load.image('battlefield','./assets/Refined_Road_clone.png');
+        this.load.image('battlefield','./assets/backgroundTile.png');
         this.load.image('powerupUIempty','./assets/powerupUI.png');
         this.load.image('powerupUI','./assets/playUICaltrop.png');
         this.load.image('arrow','./assets/arrow.png');
         this.load.image('barricade','./assets/barricade.png');
         this.load.image('caltrops','./assets/caltrops.png');
         this.load.image('powerup','./assets/caltropDrop.png');
-        this.load.image('legionArmy','./assets/romanLegionSheet.png');
-        this.load.spritesheet('shield', './assets/characterShieldSheet.png',{frameWidth: 60, frameHeight: 48, startFrame: 0, endFrame: 1});
-        this.load.spritesheet('player','./assets/characterMovingSheet.png',{frameWidth: 60, frameHeight: 38, startFrame: 0, endFrame: 1});
+        this.load.image('legionArmy','./assets/romanLegionRedoSheet.png');
+        //this.load.spritesheet('legionArmy','./assets/romanLegionRedoSheet.png',{frameWidth: 660, frameHeight: 58, startFrame: 0, endFrame: 8});
+        this.load.spritesheet('shield', './assets/characterShieldSheet.png',{frameWidth: 60, frameHeight: 48, startFrame: 0, endFrame: 8});
+        this.load.spritesheet('player','./assets/characterWalkRedo.png',{frameWidth: 60, frameHeight: 48, startFrame: 0, endFrame: 11});
     }
 
     create(){
@@ -25,23 +26,33 @@ class Play extends Phaser.Scene{
         this.menumusic.play();                                                              //play music
         this.arrowHitShield = this.sound.add('arrownoise',{volume: 0.1}); 
         this.deathNoise = this.sound.add('death',{volume: 0.1});
+        this.caltropNoise = this.sound.add('caltropnoise',{volume: 0.1});
+        this.pickupNoise = this.sound.add('pickup',{volume: 0.1});
 
         this.p1 = new Player(this, game.config.width/2, game.config.height*3/4,'player').setOrigin(0.5); //add new Player sprite
         this.anims.create({
             key: 'p1Move',
             repeat: -1,
-            frames: this.anims.generateFrameNumbers('player', {start: 0, end: 1, first: 0}),
-            frameRate: 8
+            frames: this.anims.generateFrameNumbers('player', {start: 0, end: 11, first: 0}),
+            frameRate: 30
         });
         this.anims.create({                                                             //animations for p1
             key: 'p1Shield',
-            frames: this.anims.generateFrameNumbers('shield', {start: 0, end: 1, first: 0}),
-            frameRate: 12
+            repeat: -1,
+            frames: this.anims.generateFrameNumbers('shield', {start: 0, end: 8, first: 0}),
+            frameRate: 30
         });
+        /*this.anims.create({                                                             //animations for p1
+            key: 'romanLegion',
+            repeat: -1,
+            frames: this.anims.generateFrameNumbers('legionArmy', {start: 0, end: 8, first: 0}),
+            frameRate: 24
+        });*/
 
         //army speed
-        this.armySpeed = 0;                                           
-        this.addArmy();
+        this.armySpeed = 0;
+        this.legion = new Army(this, centerX, 680,'legionArmy', 0, this.armySpeed).setOrigin(0.5);                                         
+        //this.legion.play('romanLegion');
 
         //barricade speed
         this.barricadeSpeed = 200;                                          //barricade speed starts at 200, can increase 600
@@ -99,9 +110,6 @@ class Play extends Phaser.Scene{
         let trap = new Caltrop(this, this.p1.x, this.p1.y,'caltrops', 0, caltropSpeed).setScale(1.25).setOrigin(0.5);
         this.caltropGroup.add(trap);
     }
-    addArmy() {
-        this.legion = new Army(this, centerX-10, 680, this.armySpeed); 
-    }
 
     update(){
         this.battle.tilePositionY -= 12;                                //background speed
@@ -120,7 +128,7 @@ class Play extends Phaser.Scene{
         if(this.game.input.activePointer.isDown && this.game.input.activePointer.button == 0) {         
             this.p1.shield = true;                                                                      //if left click is down player
             this.battle.tilePositionY += 9;                                                             //will pull out shield
-            this.p1.play('p1Shield');                                                                   //and slow down
+            this.p1.play('p1Shield',true);                                                                   //and slow down
             this.legion.y -= 0.3;                                                                         //army comes up
         }else{
             this.p1.shield = false;                                                                     //else running animation
@@ -131,6 +139,7 @@ class Play extends Phaser.Scene{
             if(Phaser.Input.Keyboard.JustDown(keySPACE)) {   
                 //console.log('drop caltrops');   
                 this.addCaltrop();
+                this.caltropNoise.play();
                 this.UI = this.add.tileSprite(0,0,640,480,'powerupUIempty').setOrigin(0,0);
                 powerupObtained = false; 
             }
@@ -166,9 +175,11 @@ class Play extends Phaser.Scene{
         this.scene.start('scoreScene'); //transition to scoreScene
         //console.log("dead");
     }
-    p1PowerupCollision(){
+    p1PowerupCollision(p1, powerup){
         this.UI = this.add.tileSprite(0,0,640,480,'powerupUI').setOrigin(0,0);
         powerupObtained = true;
+        powerup.setVisible(false);
+        this.pickupNoise.play();
         //console.log('powerup obtained');
     }
     //army collision 
