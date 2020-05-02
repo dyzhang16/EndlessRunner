@@ -121,7 +121,7 @@ class Play extends Phaser.Scene{
             this.p1.shield = true;                                                                      //if left click is down player
             this.battle.tilePositionY += 9;                                                             //will pull out shield
             this.p1.play('p1Shield');                                                                   //and slow down
-            this.legion.y -= 1;                                                                         //army comes up
+            this.legion.y -= 0.3;                                                                         //army comes up
         }else{
             this.p1.shield = false;                                                                     //else running animation
             this.p1.play('p1Move',true);   
@@ -173,8 +173,10 @@ class Play extends Phaser.Scene{
     }
     //army collision 
     p1ArmyCollision(){
+        this.deathNoise.play();   
         this.p1.destroyed = true;   //collision off
         this.p1.destroy();          //destroy player
+        this.menumusic.stop();
         this.scene.start('scoreScene'); //transition to scoreScene
         //console.log("dead");
     }
@@ -192,7 +194,7 @@ class Play extends Phaser.Scene{
                 this.arrowSpeed += 15;
             }
         }
-        if(seconds% 2 == 0){
+        if(seconds% 10 == 0){
             this.addPowerup(this,this.powerupSpeed);
         }
     }
