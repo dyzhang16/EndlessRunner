@@ -12,7 +12,7 @@ class Play extends Phaser.Scene{
         this.load.image('barricade','./assets/barricade.png');
         this.load.image('caltrops','./assets/caltrops.png');
         this.load.image('powerup','./assets/caltropDrop.png');
-        this.load.image('legion','./assets/romanLegion.png');
+        this.load.image('legionArmy','./assets/romanLegionSheet.png');
         this.load.spritesheet('shield', './assets/characterShieldSheet.png',{frameWidth: 60, frameHeight: 48, startFrame: 0, endFrame: 1});
         this.load.spritesheet('player','./assets/characterMovingSheet.png',{frameWidth: 60, frameHeight: 38, startFrame: 0, endFrame: 1});
     }
