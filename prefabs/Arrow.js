@@ -2,7 +2,7 @@ class Arrow extends Phaser.Physics.Arcade.Sprite {
     constructor(scene, velocity) {
         //phaser sprite constructor
         //              spawn region in x and y coordinates                    
-        super(scene, game.config.height - Math.floor(Math.random()*(arrowWidth*30)),  Phaser.Math.Between(0, 0 + arrowHeight), 'arrow');
+        super(scene, game.config.height - Math.floor(Math.random()*(arrowWidth*30)),  Phaser.Math.Between(-arrowHeight*10, -arrowHeight*6), 'arrow');
         
         scene.add.existing(this);           //existing scene 
         scene.physics.add.existing(this);   //physics to body

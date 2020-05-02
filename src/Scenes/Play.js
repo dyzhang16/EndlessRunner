@@ -55,7 +55,7 @@ class Play extends Phaser.Scene{
         //this.legion.play('romanLegion');
 
         //barricade speed
-        this.barricadeSpeed = 200;                                          //barricade speed starts at 200, can increase 600
+        this.barricadeSpeed = 150;                                          //barricade speed starts at 200, can increase 600
         this.barricadeSpeedMax = 600;
 
         //barricade group
@@ -65,7 +65,7 @@ class Play extends Phaser.Scene{
         this.addBarricade();                                                //1 barricade per cycle
         
         //arrow speed
-        this.arrowSpeed = 400;                                              //arrowSpeed starts at 400, can increase to 800
+        this.arrowSpeed = 300;                                              //arrowSpeed starts at 400, can increase to 800
         this.arrowSpeedMax = 800;
         
         //arrow group
@@ -75,7 +75,7 @@ class Play extends Phaser.Scene{
         this.addArrow();                                                    
         this.addArrow();
         //powerup speed
-        this.powerupSpeed = 300;
+        this.powerupSpeed = 200;
         this.powerupSpeedMax = 600;
         //powerup group
         this.powerupGroup = this.add.group({
@@ -92,8 +92,13 @@ class Play extends Phaser.Scene{
             callbackScope: this,
             loop: true
         });
+    
+        this.difficultyTimer = this.time.addEvent({                         //timer event every second
+            delay: 5000,                                                    //calls on TimePlayed() function
+            callback: this.TimePlayed,
+            callbackScope: this,
+        });
     }
-
     addBarricade() {
         let barricade = new Barricade(this, this.barricadeSpeed);   //new barricade
         this.barricadeGroup.add(barricade);                         //add to existing group
@@ -112,7 +117,7 @@ class Play extends Phaser.Scene{
     }
 
     update(){
-        this.battle.tilePositionY -= 12;                                //background speed
+        this.battle.tilePositionY -= 6;                                //background speed
 
         if(!this.p1.destroyed){
         //player movement    
@@ -127,7 +132,7 @@ class Play extends Phaser.Scene{
         //shield input
         if(this.game.input.activePointer.isDown && this.game.input.activePointer.button == 0) {         
             this.p1.shield = true;                                                                      //if left click is down player
-            this.battle.tilePositionY += 9;                                                             //will pull out shield
+            this.battle.tilePositionY += 3;                                                             //will pull out shield
             this.p1.play('p1Shield',true);                                                                   //and slow down
             this.legion.y -= 0.3;                                                                         //army comes up
         }else{
@@ -201,8 +206,8 @@ class Play extends Phaser.Scene{
         if(seconds % 10 == 0) {
             console.log(`Time: ${seconds}, speed: ${this.barricadeSpeed}`);
             if(this.barricadeSpeed <= this.barricadeSpeedMax && this.arrowSpeed <= this.arrowSpeedMax) {     // increase barricade speed and arrow speed
-                this.barricadeSpeed += 15;
-                this.arrowSpeed += 15;
+                this.barricadeSpeed += 25;
+                this.arrowSpeed += 25;
             }
         }
         if(seconds% 10 == 0){

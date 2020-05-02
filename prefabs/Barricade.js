@@ -2,7 +2,7 @@ class Barricade extends Phaser.Physics.Arcade.Sprite {
     constructor(scene, velocity) {
         //phaser sprite constructor
         //              spawnpoint   region         in x and y coordinates              
-        super(scene, game.config.width - Math.floor(Math.random()*(barricadeWidth*4)),  Phaser.Math.Between(0, 0 + barricadeHeight/2), 'barricade');
+        super(scene, game.config.width - Math.floor(Math.random()*(barricadeWidth*4)),  -barricadeHeight*3, 'barricade');
         
         scene.add.existing(this);           //existing scene 
         scene.physics.add.existing(this);   //physics to body
@@ -16,7 +16,7 @@ class Barricade extends Phaser.Physics.Arcade.Sprite {
     update() {
         super.update();
       
-        if(this.newBarricade && this.y > centerY) {             //spawn new barricade when current barricade hits center
+        if(this.newBarricade && this.y > game.config.height*1/4) {             //spawn new barricade when current barricade hits center
             this.newBarricade = false;
             this.scene.addBarricade(this.parent, this.velocity);
         }
