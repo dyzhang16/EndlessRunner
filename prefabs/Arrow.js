@@ -8,14 +8,14 @@ class Arrow extends Phaser.Physics.Arcade.Sprite {
         scene.physics.add.existing(this);   //physics to body
         this.setVelocityY(velocity);        //move downwards
         this.setImmovable();                //cannot be pushed by other object physics
-        this.newArrow = true;           //arrow spawn control
-        this.scene = scene;             //set variables for future reference
+        this.newArrow = true;               //arrow spawn control
+        this.scene = scene;                 //set variables for future reference
         this.velocity = velocity;
     }
 
     update() {
         super.update();
-        //new arrows spawn if an existing arrow reach 2/3 of game window height
+        //new arrows spawn if an existing arrow reach 3/4 of game window height
         if(this.newArrow && this.y > game.config.height*3/4) {
             this.newArrow = false;
             this.scene.addArrow(this.parent, this.velocity);

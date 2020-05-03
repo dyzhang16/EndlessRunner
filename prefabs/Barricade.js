@@ -16,12 +16,12 @@ class Barricade extends Phaser.Physics.Arcade.Sprite {
     update() {
         super.update();
       
-        if(this.newBarricade && this.y > game.config.height*1/4) {             //spawn new barricade when current barricade hits center
+        if(this.newBarricade && this.y > game.config.height*1/4) {             //spawn new barricade when current barricade hits 1/4 of play screen
             this.newBarricade = false;
             this.scene.addBarricade(this.parent, this.velocity);
         }
         //destroys barricade when it hits bottom of screen
-        if(this.y > game.config.height) {
+        if(this.y > game.config.height) {                                       
             this.destroy();
         }
     }

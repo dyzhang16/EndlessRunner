@@ -13,113 +13,113 @@ class Play extends Phaser.Scene{
         this.load.image('caltrops','./assets/caltrops.png');
         this.load.image('powerup','./assets/caltropDrop.png');
         this.load.image('legionArmy','./assets/romanLegionRedoSheet.png');
-        //this.load.spritesheet('legionArmy','./assets/romanLegionRedoSheet.png',{frameWidth: 660, frameHeight: 58, startFrame: 0, endFrame: 8});
         this.load.spritesheet('shield', './assets/characterShieldSheet.png',{frameWidth: 60, frameHeight: 48, startFrame: 0, endFrame: 8});
         this.load.spritesheet('player','./assets/characterWalkRedo.png',{frameWidth: 60, frameHeight: 48, startFrame: 0, endFrame: 11});
+         //this.load.spritesheet('legionArmy','./assets/romanLegionRedoSheet.png',{frameWidth: 660, frameHeight: 58, startFrame: 0, endFrame: 8});
+         //animation to make army animated(?)
     }
 
     create(){
-        keySPACE = this.input.keyboard.addKey(Phaser.Input.Keyboard.KeyCodes.SPACE);
-        this.battle = this.add.tileSprite(0,0,640,480,'battlefield').setOrigin(0,0);
-        this.UI = this.add.tileSprite(0,0,640,480,'powerupUIempty').setOrigin(0,0);
-        this.menumusic = this.sound.add('menu_music',{volume: 0.1});                        //add music
-        this.menumusic.play();                                                              //play music
-        this.arrowHitShield = this.sound.add('arrownoise',{volume: 0.1}); 
-        this.deathNoise = this.sound.add('death',{volume: 0.1});
-        this.caltropNoise = this.sound.add('caltropnoise',{volume: 0.1});
-        this.pickupNoise = this.sound.add('pickup',{volume: 0.1});
+        keySPACE = this.input.keyboard.addKey(Phaser.Input.Keyboard.KeyCodes.SPACE);        //reserve variable for on space down
+        this.battle = this.add.tileSprite(0,0,640,480,'battlefield').setOrigin(0,0);        //add backgroundTile
+        this.UI = this.add.tileSprite(0,0,640,480,'powerupUIempty').setOrigin(0,0);         //add UI 
+        this.menumusic = this.sound.add('menu_music',{volume: 0.1});                        //add BG music
+        this.menumusic.play();                                                              //play BG music
+        this.arrowHitShield = this.sound.add('arrownoise',{volume: 0.1});                   //add arrow hitting noise 
+        this.deathNoise = this.sound.add('death',{volume: 0.1});                            //add death noise
+        this.pickupNoise = this.sound.add('pickup',{volume: 0.1});                          //add pickup indicator noise
+        this.caltropNoise = this.sound.add('caltropnoise',{volume: 0.1});                   //add caltrop deployment noise
 
+        //Instantiate character and animations
         this.p1 = new Player(this, game.config.width/2, game.config.height*3/4,'player').setOrigin(0.5); //add new Player sprite
-        this.anims.create({
+        this.anims.create({                                 //basic movement animation
             key: 'p1Move',
             repeat: -1,
             frames: this.anims.generateFrameNumbers('player', {start: 0, end: 11, first: 0}),
             frameRate: 30
         });
-        this.anims.create({                                                             //animations for p1
+        this.anims.create({                                 //shield movement animation
             key: 'p1Shield',
             repeat: -1,
             frames: this.anims.generateFrameNumbers('shield', {start: 0, end: 8, first: 0}),
             frameRate: 30
         });
-        /*this.anims.create({                                                             //animations for p1
+
+        /*this.anims.create({                               //animations for legion army
             key: 'romanLegion',
             repeat: -1,
             frames: this.anims.generateFrameNumbers('legionArmy', {start: 0, end: 8, first: 0}),
             frameRate: 24
         });*/
 
-        //army speed
-        this.armySpeed = 0;
-        this.legion = new Army(this, centerX, 680,'legionArmy', 0, this.armySpeed).setOrigin(0.5);                                         
-        //this.legion.play('romanLegion');
-
-        //barricade speed
-        this.barricadeSpeed = 150;                                          //barricade speed starts at 200, can increase 600
+        //barricade properties
+        this.barricadeSpeed = 150;                                          //barricade speed starts at 150, can increase 600
         this.barricadeSpeedMax = 600;
-
-        //barricade group
-        this.barricadeGroup = this.add.group({
+        this.barricadeGroup = this.add.group({                              //sets a variable that constant updates the barricade group
           runChildUpdate: true                //update group
          });
-        this.addBarricade();                                                //1 barricade per cycle
+        this.addBarricade();                                                //1 barricade spawn per cycle
         
-        //arrow speed
-        this.arrowSpeed = 300;                                              //arrowSpeed starts at 400, can increase to 800
-        this.arrowSpeedMax = 800;
-        
-        //arrow group
-        this.arrowGroup = this.add.group({
+        //arrow properties
+        this.arrowSpeed = 300;                                              //arrowSpeed starts at 300, can increase to 750
+        this.arrowSpeedMax = 750;
+        this.arrowGroup = this.add.group({                                  //sets a variable that constant updates the arrow group
             runChildUpdate: true                //update group
            });
-        this.addArrow();                                                    
+        this.addArrow();                                                    //2 arrows per cycle
         this.addArrow();
-        //powerup speed
-        this.powerupSpeed = 200;
+        
+        //Instantiates army and properties
+        this.armySpeed = -1;
+        this.legion = new Army(this, centerX, 680,'legionArmy', 0, this.armySpeed).setOrigin(0.5);        //spawns army at the bottom of the screen                                 
+        //this.legion.play('romanLegion');                                  //play army animation
+        
+        //powerup properties
+        this.powerupSpeed = 200;                                            //powerupSpeed starts at 200 can increase up to 600
         this.powerupSpeedMax = 600;
-        //powerup group
-        this.powerupGroup = this.add.group({
+        this.powerupGroup = this.add.group({                                //sets a variable that constant updates the powerup group
             runChildUpdate: true                //update group
-           });
-        //caltrop group
-           this.caltropGroup = this.add.group({
+           });                                                              //spawns based on timer function below
+        
+        //caltrop properties
+        this.caltropSpeed = 300;                                            //sets a variable that constant updates the caltrop group
+        this.caltropGroup = this.add.group({                                            
             runChildUpdate: true                //update group
            });
 
-        this.difficultyTimer = this.time.addEvent({                         //timer event every second
-            delay: 1000,                                                   //calls on TimePlayed() function
+        //timer event every second
+        this.difficultyTimer = this.time.addEvent({                         
+            delay: 1000,                                                    //calls on TimePlayed() function
             callback: this.TimePlayed,
             callbackScope: this,
             loop: true
         });
-    
-        this.difficultyTimer = this.time.addEvent({                         //timer event every second
-            delay: 5000,                                                    //calls on TimePlayed() function
-            callback: this.TimePlayed,
-            callbackScope: this,
-        });
     }
+    //Instantiates a barrier object, called from Barricade.js
     addBarricade() {
-        let barricade = new Barricade(this, this.barricadeSpeed);   //new barricade
-        this.barricadeGroup.add(barricade);                         //add to existing group
+        let barricade = new Barricade(this, this.barricadeSpeed);           //new Barricade(speed parameters are the current speed in the game)
+        this.barricadeGroup.add(barricade);                                 //add to existing group
     }
+    //Instantiates an arrow object, called from Arrow.js
     addArrow() {
-        let arrow = new Arrow(this, this.arrowSpeed);       //new Arrow
-        this.arrowGroup.add(arrow);                         //add to existing group
+        let arrow = new Arrow(this, this.arrowSpeed);                       //new Arrow(speed parameters are the current speed in the game) 
+        this.arrowGroup.add(arrow);                                         //add to existing group
     }
+    //Instantiates a powerup object, called on a timerfunction every 20 seconds
     addPowerup(){
-        let powerup = new Powerup(this, this.powerupSpeed);
-        this.powerupGroup.add(powerup);
+        let powerup = new Powerup(this, this.powerupSpeed);                 //new Powerup(speed parameters are the current speed in the game)
+        this.powerupGroup.add(powerup);                                     //add to existing group
     }
-    addCaltrop(){
-        let trap = new Caltrop(this, this.p1.x, this.p1.y,'caltrops', 0, caltropSpeed).setScale(1.25).setOrigin(0.5);
-        this.caltropGroup.add(trap);
+    //Instantitates a caltrop object, called every time a player presses space while having the object in their inventory
+    addCaltrop(){                                                           //new Caltrop(location based on where player is)
+        let trap = new Caltrop(this, this.p1.x, this.p1.y,'caltrops', 0, this.caltropSpeed).setScale(1.25).setOrigin(0.5);
+        this.caltropGroup.add(trap);                                        //add to existing group
     }
 
     update(){
-        this.battle.tilePositionY -= 6;                                //background speed
+        this.battle.tilePositionY -= 6;                                 //background speed
 
-        if(!this.p1.destroyed){
+        if(!this.p1.destroyed){                                         //mouse movement for character
         //player movement    
         let dx = this.input.activePointer.worldX - this.p1.x;           //https://phaser.discourse.group/t/agar-io-mouse-control/1573/3
         let dy = this.input.activePointer.worldY - this.p1.y;           //player sprite will follow cursor position
@@ -129,89 +129,90 @@ class Play extends Phaser.Scene{
             Math.sin(angle) * 250
         )
         }   
-        //shield input
-        if(this.game.input.activePointer.isDown && this.game.input.activePointer.button == 0) {         
-            this.p1.shield = true;                                                                      //if left click is down player
-            this.battle.tilePositionY += 3;                                                             //will pull out shield
-            this.p1.play('p1Shield',true);                                                                   //and slow down
-            this.legion.y -= 0.3;                                                                         //army comes up
+        //On left click down, player will pull out shield and slow down and army will start to move forward
+        if(this.game.input.activePointer.isDown && this.game.input.activePointer.button == 0) {             //checks for left click   
+            this.p1.shield = true;                                      //sets variable for shield is out
+            this.battle.tilePositionY += 3;                             //slows down battlefield                                  
+            this.p1.play('p1Shield',true);                              //plays shield animation                                    
+            this.legion.y -= 0.2;                                       //army starts to catch up
         }else{
-            this.p1.shield = false;                                                                     //else running animation
+            this.p1.shield = false;                                     //otherwise plays running animation
             this.p1.play('p1Move',true);   
         }
-        //drops caltrops
-        if(powerupObtained == true) {         
-            if(Phaser.Input.Keyboard.JustDown(keySPACE)) {   
-                //console.log('drop caltrops');   
-                this.addCaltrop();
-                this.caltropNoise.play();
-                this.UI = this.add.tileSprite(0,0,640,480,'powerupUIempty').setOrigin(0,0);
-                powerupObtained = false; 
+        //On space bar, player will drop caltrops if they have it in their inventory
+        if(powerupObtained == true) {                                   //checks if they have the powerup
+            if(Phaser.Input.Keyboard.JustDown(keySPACE)) {              //on space button input
+                this.addCaltrop();                                      //instantiates caltrop object
+                this.caltropNoise.play();                               //plays caltrop deployment sound
+                this.UI = this.add.tileSprite(0,0,640,480,'powerupUIempty').setOrigin(0,0); //removes caltrop from the UI
+                powerupObtained = false;                                //resets powerup pickup
+                //console.log('drop caltrops');
             }
         }
-        //check collision
-        this.physics.world.collide(this.p1, this.arrowGroup, this.p1ArrowCollision, null, this);            //collision arrow and player
-        this.physics.world.collide(this.p1, this.barricadeGroup, this.p1BarrierCollision, null, this);      //collision barricade and player
-        this.physics.world.collide(this.p1, this.powerupGroup, this.p1PowerupCollision, null, this);      //collision barricade and player
-        this.physics.world.collide(this.p1, this.legion, this.p1ArmyCollision, null, this);              //army collision + player
-        this.physics.world.collide(this.caltropGroup, this.legion, this.caltropArmyCollision, null, this);
+        //check collision between objects, Phaser passes in specific object as arguments behind the scenes
+        this.physics.world.collide(this.p1, this.arrowGroup, this.p1ArrowCollision, null, this);          //collision player and arrow
+        this.physics.world.collide(this.p1, this.barricadeGroup, this.p1BarrierCollision, null, this);    //collision player and barricade
+        this.physics.world.collide(this.p1, this.powerupGroup, this.p1PowerupCollision, null, this);      //collision player and powerup
+        this.physics.world.collide(this.p1, this.legion, this.p1ArmyCollision, null, this);               //collision player and army
+        this.physics.world.collide(this.caltropGroup, this.legion, this.caltropArmyCollision, null, this);//collision caltrop and army
     }
     //Arrow collision
     p1ArrowCollision(p1,arrow){                                         //pass parameters referencing player and specific arrow
-        if(p1.shield == true){
-            this.arrowHitShield.play(); 
-            arrow.setVisible(false);      //sets arrow to Invisible if shield is out
+        if(p1.shield == true){                                          //if shield is out
+            this.arrowHitShield.play();                                 //plays arrow hitting shield sound
+            arrow.setVisible(false);                                    //sets arrow to Invisible(imitating destroying the arrow)
             //console.log('arrow blocked');          
-        }else{          
-            this.deathNoise.play();                                                                                
-            p1.destroyed = true;           //collision off
-            p1.destroy();                  //destroy player
-            this.menumusic.stop();
-            this.scene.start('scoreScene');     //transition to scoreScene
+        }else{                                                          //else transition to Score scene
+            this.deathNoise.play();                                     //plays the sound for character death                                           
+            p1.destroyed = true;                                        //turns collision off  
+            p1.destroy();                                               //destroy player
+            this.menumusic.stop();                                      //stops BGM 
+            this.scene.start('scoreScene');                             //transitions to scoreScene
             //console.log('dead');
         }
     }
     //Barrier collision 
-    p1BarrierCollision(){
-        this.deathNoise.play();
-        this.p1.destroyed = true;   //collision off
-        this.p1.destroy();          //destroy player
-        this.menumusic.stop();
-        this.scene.start('scoreScene'); //transition to scoreScene
+    p1BarrierCollision(){                                               
+        this.deathNoise.play();                                         //plays the sound for character death
+        this.p1.destroyed = true;                                       //turns collision off
+        this.p1.destroy();                                              //destroy player
+        this.menumusic.stop();                                          //stops BGM
+        this.scene.start('scoreScene');                                 //transitions to scoreScene
         //console.log("dead");
     }
-    p1PowerupCollision(p1, powerup){
-        this.UI = this.add.tileSprite(0,0,640,480,'powerupUI').setOrigin(0,0);
-        powerupObtained = true;
-        powerup.setVisible(false);
-        this.pickupNoise.play();
+    //Powerup collision
+    p1PowerupCollision(p1, powerup){                                    //passes in parameters for player and specific powerup
+        this.UI = this.add.tileSprite(0,0,640,480,'powerupUI').setOrigin(0,0);  //changes UI to indicate powerup is picked
+        powerupObtained = true;                                         //sets variable to indicate that powerup is obtained
+        powerup.setVisible(false);                                      //hides powerUp sprite to indicate player has picked it up
+        this.pickupNoise.play();                                        //plays powerup pick up sound
         //console.log('powerup obtained');
     }
     //army collision 
     p1ArmyCollision(){
-        this.deathNoise.play();   
-        this.p1.destroyed = true;   //collision off
-        this.p1.destroy();          //destroy player
-        this.menumusic.stop();
-        this.scene.start('scoreScene'); //transition to scoreScene
+        this.deathNoise.play();                                         //plays sound for character death
+        this.p1.destroyed = true;                                       //turns collision off
+        this.p1.destroy();                                              //destroy player
+        this.menumusic.stop();                                          //stops BGM
+        this.scene.start('scoreScene');                                 //transitions to scoreScene
         //console.log("dead");
     }
-    caltropArmyCollision(){
-        this.legion.y = this.legion.y + 10;
+    //collision between army and caltrops
+    caltropArmyCollision(caltrop){                                             
+        this.legion.y = this.legion.y + 3;                             //pushes the army back
     }
-    TimePlayed() {
+    TimePlayed() {                                                      //timer function called every second after the game starts
         //  
-        seconds++;
+        seconds++;                                                      //increases seconds to keep track of time
         // speed increase every 10 seconds
-        if(seconds % 10 == 0) {
-            console.log(`Time: ${seconds}, speed: ${this.barricadeSpeed}`);
-            if(this.barricadeSpeed <= this.barricadeSpeedMax && this.arrowSpeed <= this.arrowSpeedMax) {     // increase barricade speed and arrow speed
-                this.barricadeSpeed += 25;
-                this.arrowSpeed += 25;
-            }
-        }
-        if(seconds% 10 == 0){
+        if(seconds % 10 == 0) {                                         
+            //console.log(`Time: ${seconds}, speed: ${this.barricadeSpeed}`);
             this.addPowerup(this,this.powerupSpeed);
+            if(this.barricadeSpeed <= this.barricadeSpeedMax && this.arrowSpeed <= this.arrowSpeedMax) {   //increases speed of obstacles only if they are currently slower than their max speeds 
+                this.barricadeSpeed += 25;                      //increase barricade, arrow, and powerup speeds by 25 px
+                this.arrowSpeed += 25;
+                this.powerupSpeed += 25;
+            }
         }
     }
 }

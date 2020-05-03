@@ -8,8 +8,7 @@ class Powerup extends Phaser.Physics.Arcade.Sprite {
         scene.physics.add.existing(this);   //physics to body
         this.setVelocityY(velocity);        //move downwards
         this.setImmovable();                //cannot be pushed by other object physics
-        this.PowerupObtained = false;           //powerUp spawn control
-        this.scene = scene;             //set variables for future reference
+        this.scene = scene;                 //set variables for future reference
         this.velocity = velocity;
     }
 

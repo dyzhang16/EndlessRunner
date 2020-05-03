@@ -12,7 +12,7 @@ class Caltrop extends Phaser.Physics.Arcade.Sprite {
 
     update() {
         super.update();
-        if(this.y > game.config.height) {
+        if(this.y > game.config.height) {       //destroys object when it reaches bottom of play screen
             this.destroy();
         }
     }
