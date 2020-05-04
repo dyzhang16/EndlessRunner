@@ -151,7 +151,11 @@ class Play extends Phaser.Scene{
                 this.addCaltrop();                                      //instantiates caltrop object
                 this.caltropNoise.play();                               //plays caltrop deployment sound
                 this.UI = this.add.tileSprite(0,0,640,480,'powerupUIempty').setOrigin(0,0); //removes caltrop from the UI
-                powerupObtained = false;                                //resets powerup pickup
+                this.clock = this.time.delayedCall(0.5, () => {         //delays setting powerupObtained variable to be true
+                    if(powerupObtained == true){
+                            powerupObtained = false;
+                    }
+                }, null, this);
                 //console.log('drop caltrops');
             }
         }
