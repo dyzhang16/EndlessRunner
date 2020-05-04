@@ -13,10 +13,11 @@ class Play extends Phaser.Scene{
         this.load.image('caltrops','./assets/caltrops.png');
         this.load.image('powerup','./assets/caltropDrop.png');
         this.load.image('legionArmy','./assets/romanLegionRedoSheet.png');
+        //this.load.atlas('character','./assets/characterAtlas.png','./assets/characterAtlasHash.json');
         this.load.spritesheet('shield', './assets/characterShieldSheet.png',{frameWidth: 60, frameHeight: 48, startFrame: 0, endFrame: 8});
         this.load.spritesheet('player','./assets/characterWalkRedo.png',{frameWidth: 60, frameHeight: 48, startFrame: 0, endFrame: 11});
-         //this.load.spritesheet('legionArmy','./assets/romanLegionRedoSheet.png',{frameWidth: 660, frameHeight: 58, startFrame: 0, endFrame: 8});
-         //animation to make army animated(?)
+        //this.load.spritesheet('legionArmy','./assets/romanLegionRedoSheet.png',{frameWidth: 660, frameHeight: 58, startFrame: 0, endFrame: 8});
+        //animation to make army animated(?)
     }
 
     create(){
@@ -24,6 +25,7 @@ class Play extends Phaser.Scene{
         this.battle = this.add.tileSprite(0,0,640,480,'battlefield').setOrigin(0,0);        //add backgroundTile
         this.UI = this.add.tileSprite(0,0,640,480,'powerupUIempty').setOrigin(0,0);         //add UI 
         this.menumusic = this.sound.add('menu_music',{volume: 0.1});                        //add BG music
+        this.menumusic.loop = true;                                                         //loops menu music
         this.menumusic.play();                                                              //play BG music
         this.arrowHitShield = this.sound.add('arrownoise',{volume: 0.1});                   //add arrow hitting noise 
         this.deathNoise = this.sound.add('death',{volume: 0.1});                            //add death noise
@@ -124,9 +126,9 @@ class Play extends Phaser.Scene{
         let dx = this.input.activePointer.worldX - this.p1.x;           //https://phaser.discourse.group/t/agar-io-mouse-control/1573/3
         let dy = this.input.activePointer.worldY - this.p1.y;           //player sprite will follow cursor position
         var angle = Math.atan2(dy,dx);                                  //calculates how fast the sprite will move
-        this.p1.body.setVelocity(
-            Math.cos(angle) * 250,
-            Math.sin(angle) * 250
+            this.p1.body.setVelocity(
+                Math.cos(angle) * 250,
+                Math.sin(angle) * 250
         )
         }   
         //On left click down, player will pull out shield and slow down and army will start to move forward
@@ -136,9 +138,13 @@ class Play extends Phaser.Scene{
             this.p1.play('p1Shield',true);                              //plays shield animation                                    
             this.legion.y -= 0.2;                                       //army starts to catch up
         }else{
-            this.p1.shield = false;                                     //otherwise plays running animation
-            this.p1.play('p1Move',true);   
-        }
+            this.clock = this.time.delayedCall(0.5, () => {
+                if(!this.game.input.activePointer.isDown || !this.game.input.activePointer.button == 0){
+                        this.p1.shield = false;                                     //otherwise plays running animation
+                        this.p1.play('p1Move',true);
+                }
+            }, null, this);
+        }   
         //On space bar, player will drop caltrops if they have it in their inventory
         if(powerupObtained == true) {                                   //checks if they have the powerup
             if(Phaser.Input.Keyboard.JustDown(keySPACE)) {              //on space button input
@@ -199,7 +205,7 @@ class Play extends Phaser.Scene{
     }
     //collision between army and caltrops
     caltropArmyCollision(caltrop){                                             
-        this.legion.y = this.legion.y + 3;                             //pushes the army back
+        this.legion.y = this.legion.y + 2;                             //pushes the army back
     }
     TimePlayed() {                                                      //timer function called every second after the game starts
         //  
