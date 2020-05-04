@@ -73,7 +73,7 @@ class Play extends Phaser.Scene{
         
         //Instantiates army and properties
         this.armySpeed = -1;
-        this.legion = new Army(this, centerX, 680,'legionArmy', 0, this.armySpeed).setOrigin(0.5);        //spawns army at the bottom of the screen                                 
+        this.legion = new Army(this, centerX, 740,'legionArmy', 0, this.armySpeed).setOrigin(0.5);        //spawns army at the bottom of the screen                                 
         //this.legion.play('romanLegion');                                  //play army animation
         
         //powerup properties
@@ -138,7 +138,7 @@ class Play extends Phaser.Scene{
             this.p1.play('p1Shield',true);                              //plays shield animation                                    
             this.legion.y -= 0.2;                                       //army starts to catch up
         }else{
-            this.clock = this.time.delayedCall(0.5, () => {
+            this.clock = this.time.delayedCall(5, () => {
                 if(!this.game.input.activePointer.isDown || !this.game.input.activePointer.button == 0){
                         this.p1.shield = false;                                     //otherwise plays running animation
                         this.p1.play('p1Move',true);
@@ -151,7 +151,7 @@ class Play extends Phaser.Scene{
                 this.addCaltrop();                                      //instantiates caltrop object
                 this.caltropNoise.play();                               //plays caltrop deployment sound
                 this.UI = this.add.tileSprite(0,0,640,480,'powerupUIempty').setOrigin(0,0); //removes caltrop from the UI
-                this.clock = this.time.delayedCall(0.5, () => {         //delays setting powerupObtained variable to be true
+                this.clock = this.time.delayedCall(5, () => {         //delays setting powerupObtained variable to be true
                     if(powerupObtained == true){
                             powerupObtained = false;
                     }
