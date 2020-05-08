@@ -13,9 +13,9 @@ class Play extends Phaser.Scene{
         this.load.image('caltrops','./assets/caltrops.png');
         this.load.image('powerup','./assets/caltropDrop.png');
         this.load.image('legionArmy','./assets/romanLegionRedoSheet.png');
-        //this.load.atlas('character','./assets/characterAtlas.png','./assets/characterAtlasHash.json');
-        this.load.spritesheet('shield', './assets/characterShieldSheet.png',{frameWidth: 60, frameHeight: 48, startFrame: 0, endFrame: 8});
-        this.load.spritesheet('player','./assets/characterWalkRedo.png',{frameWidth: 60, frameHeight: 48, startFrame: 0, endFrame: 11});
+        this.load.atlas('character','./assets/characterAtlas.png','./assets/atlasCut.json');
+        //this.load.spritesheet('shield', './assets/characterShieldSheet.png',{frameWidth: 60, frameHeight: 48, startFrame: 0, endFrame: 8});
+        //this.load.spritesheet('player','./assets/characterWalkRedo.png',{frameWidth: 60, frameHeight: 48, startFrame: 0, endFrame: 11});
         //this.load.spritesheet('legionArmy','./assets/romanLegionRedoSheet.png',{frameWidth: 660, frameHeight: 58, startFrame: 0, endFrame: 8});
         //animation to make army animated(?)
     }
@@ -33,17 +33,17 @@ class Play extends Phaser.Scene{
         this.caltropNoise = this.sound.add('caltropnoise',{volume: 0.1});                   //add caltrop deployment noise
 
         //Instantiate character and animations
-        this.p1 = new Player(this, game.config.width/2, game.config.height*3/4,'player').setOrigin(0.5); //add new Player sprite
+        this.p1 = new Player(this, game.config.width/2, game.config.height*3/4,'character').setOrigin(0.5); //add new Player sprite
         this.anims.create({                                 //basic movement animation
             key: 'p1Move',
             repeat: -1,
-            frames: this.anims.generateFrameNumbers('player', {start: 0, end: 11, first: 0}),
+            frames: this.anims.generateFrameNames('character', {start: 0, end: 11, prefix: 'sprite'}),
             frameRate: 30
         });
         this.anims.create({                                 //shield movement animation
             key: 'p1Shield',
             repeat: -1,
-            frames: this.anims.generateFrameNumbers('shield', {start: 0, end: 8, first: 0}),
+            frames: this.anims.generateFrameNames('character', {start: 13, end: 20, prefix: 'sprite'}),
             frameRate: 30
         });
 
