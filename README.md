@@ -11,7 +11,7 @@ EndlessRunner
     impressed with the initial sprites, but after seeing the rework for the new sprites, we all agreed that the new sprites highlighted 
     our game even further.
 
-* Cited Sources *
+                                                        Cited Sources 
 
 https://www.bensound.com/royalty-free-music/track/epic		           background music by Bensound.com
 http://soundbible.com/947-Metal-Bang.html			                       arrow hitting shield
